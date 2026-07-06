@@ -1,48 +1,50 @@
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import allure
 from selenium.webdriver.common.keys import Keys
+from pages.base_page import BasePage
 from locators import ScooterOrderPageLocators
 
-class OrderPage:
-    def __init__(self, driver):
-        self.driver = driver
-
-    def fill_first_step(self, name, surname, address, phone):
-        
-        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(ScooterOrderPageLocators.NAME_INPUT)).send_keys(name)
-        self.driver.find_element(*ScooterOrderPageLocators.SURNAME_INPUT).send_keys(surname)
-        self.driver.find_element(*ScooterOrderPageLocators.ADDRESS_INPUT).send_keys(address)
-        self.driver.find_element(*ScooterOrderPageLocators.PHONE_INPUT).send_keys(phone)
+class OrderPage(BasePage):
     
-        metro = self.driver.find_element(*ScooterOrderPageLocators.METRO_STATION_INPUT)
-        metro.click()
-        metro.send_keys(Keys.DOWN)
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(ScooterOrderPageLocators.METRO_DROPDOWN_OPTION)).click()
+    def __init__(self, driver):
+        super().__init__(driver)
 
-        self.driver.find_element(*ScooterOrderPageLocators.NEXT_BUTTON).click()
+    @allure.step("Заполнить форму 'Для кого самокат': {name} {surname}")
+    def fill_first_step(self, name, surname, address, phone):
+        self.send_keys_to_element(ScooterOrderPageLocators.NAME_INPUT, name)
+        self.send_keys_to_element(ScooterOrderPageLocators.SURNAME_INPUT, surname)
+        self.send_keys_to_element(ScooterOrderPageLocators.ADDRESS_INPUT, address)
+        self.send_keys_to_element(ScooterOrderPageLocators.PHONE_INPUT, phone)
+        
+        metro_field = self.wait_for_clickable(ScooterOrderPageLocators.METRO_STATION_INPUT)
+        metro_field.click()
+    
+        self.send_special_key(ScooterOrderPageLocators.METRO_STATION_INPUT, Keys.DOWN)
+        
+        self.wait_for_visibility(ScooterOrderPageLocators.METRO_DROPDOWN_OPTION, timeout=5)
+        
+        self.click_element(ScooterOrderPageLocators.METRO_DROPDOWN_OPTION)
+        
+        self.click_element(ScooterOrderPageLocators.NEXT_BUTTON)
 
+    @allure.step("Заполнить форму 'Про аренду': дата {date}, цвет {color}")
     def fill_second_step(self, date, comment, color="black"):
-        
-        date_field = WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(ScooterOrderPageLocators.DATE_INPUT))
+        date_field = self.wait_for_visibility(ScooterOrderPageLocators.DATE_INPUT)
         date_field.send_keys(date)
-        date_field.send_keys(Keys.ENTER)
-
-        self.driver.find_element(*ScooterOrderPageLocators.RENT_TIME_DROPDOWN).click()
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(ScooterOrderPageLocators.RENT_TIME_OPTION_ONE_DAY)).click()
-
+        self.send_special_key(ScooterOrderPageLocators.DATE_INPUT, Keys.ENTER)
+        self.click_element(ScooterOrderPageLocators.RENT_TIME_DROPDOWN)
+        self.click_element(ScooterOrderPageLocators.RENT_TIME_OPTION_ONE_DAY)
         if color == "black":
-            self.driver.find_element(*ScooterOrderPageLocators.COLOR_BLACK_CHECKBOX).click()
+            self.click_element(ScooterOrderPageLocators.COLOR_BLACK_CHECKBOX)
         else:
-            self.driver.find_element(*ScooterOrderPageLocators.COLOR_GREY_CHECKBOX).click()
+            self.click_element(ScooterOrderPageLocators.COLOR_GREY_CHECKBOX)
+        self.send_keys_to_element(ScooterOrderPageLocators.COMMENT_INPUT, comment)
+        self.click_element(ScooterOrderPageLocators.FINAL_ORDER_BUTTON)
 
-        self.driver.find_element(*ScooterOrderPageLocators.COMMENT_INPUT).send_keys(comment)
-        self.driver.find_element(*ScooterOrderPageLocators.FINAL_ORDER_BUTTON).click()
-
+    @allure.step("Подтвердить заказ в модальном окне")
     def confirm_order(self):
+        self.click_element(ScooterOrderPageLocators.CONFIRM_YES_BUTTON)
 
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(ScooterOrderPageLocators.CONFIRM_YES_BUTTON)).click()
-
+    @allure.step("Проверить появление всплывающего окна 'Заказ оформлен'")
     def is_order_success_popup_displayed(self):
-        
-        element = WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(ScooterOrderPageLocators.SUCCESS_ORDER_HEADER))
+        element = self.wait_for_visibility(ScooterOrderPageLocators.SUCCESS_ORDER_HEADER)
         return element.is_displayed()

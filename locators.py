@@ -1,7 +1,7 @@
 from selenium.webdriver.common.by import By
 
 class ScooterMainPageLocators:
-    # Принятие куки
+    
     COOKIE_ACCEPT_BUTTON = (By.ID, "rcc-confirm-button")
     
     # Кнопки заказа
@@ -23,16 +23,18 @@ class ScooterMainPageLocators:
 
 
 class ScooterOrderPageLocators:
-    # --- Этап 1: "Для кого самокат" ---
+    
     NAME_INPUT = (By.XPATH, ".//input[@placeholder='* Имя']")
     SURNAME_INPUT = (By.XPATH, ".//input[@placeholder='* Фамилия']")
     ADDRESS_INPUT = (By.XPATH, ".//input[@placeholder='* Адрес: куда привезти заказ']")
     METRO_STATION_INPUT = (By.XPATH, ".//input[@placeholder='* Станция метро']")
-    METRO_DROPDOWN_OPTION = (By.XPATH, ".//li[@class='select-search__row']")
+    
+    METRO_DROPDOWN_OPTION = (By.XPATH, ".//li[contains(@class, 'select-search__row') or contains(@class, 'select-search__option')]")
+    
     PHONE_INPUT = (By.XPATH, ".//input[@placeholder='* Телефон: на него позвонит курьер']")
     NEXT_BUTTON = (By.XPATH, ".//button[text()='Далее']")
 
-    # --- Этап 2: "Про аренду" ---
+    
     DATE_INPUT = (By.XPATH, ".//input[@placeholder='* Когда привезти самокат']")
     RENT_TIME_DROPDOWN = (By.XPATH, ".//div[@class='Dropdown-control']")
     RENT_TIME_OPTION_ONE_DAY = (By.XPATH, ".//div[text()='сутки']")
@@ -41,6 +43,6 @@ class ScooterOrderPageLocators:
     COMMENT_INPUT = (By.XPATH, ".//input[@placeholder='Комментарий для курьера']")
     FINAL_ORDER_BUTTON = (By.XPATH, ".//div[contains(@class, 'Order_Buttons')]/button[text()='Заказать']")
 
-    # --- Подтверждение заказа ---
+    
     CONFIRM_YES_BUTTON = (By.XPATH, ".//button[text()='Да']")
     SUCCESS_ORDER_HEADER = (By.XPATH, ".//div[contains(@class, 'Order_ModalHeader') and text()='Заказ оформлен']")
